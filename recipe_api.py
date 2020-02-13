@@ -1,4 +1,5 @@
-import bs4
+from bs4 import BeautifulSoup
+import requests
 import nltk
 
 
@@ -10,7 +11,14 @@ def get_name(url):
 
     Returns: recipe_name (string): Name of recipe.
     '''
-    return 'vibes,,,132'
+    recipe_name = ""
+    res = requests.get(url)
+    html = res.content
+
+    bs = BeautifulSoup(html, "html.parser")
+    recipe_name = bs.find(
+        'h1', attrs={'id': 'recipe-main-content'}).contents[0]
+    return recipe_name
 
 
 def get_ingredients(url):
@@ -62,14 +70,18 @@ def get_steps(url):
     return ['hi', 'bye']
     pass
 
+
 def transform_to_veg(recipe_info):
     pass
 
+
 def transform_from_veg(recipe_info):
-    return {'test':['test again!']}
+    return {'test': ['test again!']}
+
 
 def transform_to_healthy(recipe_info):
     pass
+
 
 def transform_to_italian(recipe_info):
     pass

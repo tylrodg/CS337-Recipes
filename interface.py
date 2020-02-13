@@ -15,13 +15,13 @@ def input_recipe():
         if 'allrecipes' not in url:
             print('Invalid URL provided! Please submit again.\n')
             url = ""
-    return url
-
-
-def confirm_recipe(url):
     name = recipe_api.get_name(url)
     print('Thanks for submitting that URL! The recipe you requested was ' +
           name+'.\n')
+    return url, name
+
+
+def confirm_recipe(url):
     response = ""
     while not response:
         response = input('Is that the correct recipe? ([y]es/[n]o): ').lower()
@@ -37,7 +37,7 @@ def confirm_recipe(url):
         else:
             print('Sorry I didn\'t understand that.')
             response = ""
-    return url, name
+    return url
 
 
 def fetch_recipe_info(url, name):
@@ -86,8 +86,8 @@ def main():
 
     print('Welcome to ReciParser! Let\'s get started! \nPlease provide a valid AllRecipes.com URL or type \'quit\' to quit the program. You can quit whenever we request your input.\n')
 
-    url = input_recipe()
-    url, name = confirm_recipe(url)
+    url, name = input_recipe()
+    url = confirm_recipe(url)
     recipe_info = fetch_recipe_info(url, name)
     for i in recipe_info:
         if i == 'recipe_name':
