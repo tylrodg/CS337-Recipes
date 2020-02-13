@@ -1,6 +1,15 @@
 from bs4 import BeautifulSoup
+import bs4
 import requests
 import nltk
+
+
+def get_page(url):
+    res = requests.get(url)
+    html = res.content
+
+    bs = BeautifulSoup(html, "html.parser")
+    return bs
 
 
 def get_name(url):
@@ -12,10 +21,7 @@ def get_name(url):
     Returns: recipe_name (string): Name of recipe.
     '''
     recipe_name = ""
-    res = requests.get(url)
-    html = res.content
-
-    bs = BeautifulSoup(html, "html.parser")
+    bs = get_page(url)
     recipe_name = bs.find(
         'h1', attrs={'id': 'recipe-main-content'}).contents[0]
     return recipe_name
@@ -29,8 +35,21 @@ def get_ingredients(url):
 
     Returns: ingredients (list): List of ingredients from recipe.
     '''
-    return ['hi', 'bye']
-    pass
+    ingredients = []
+    bs = get_page(url)
+    i = 1
+    is_working = True
+    while is_working:
+        try:
+            list_obj = bs.find(
+                'ul', attrs={'id': 'lst_ingredients_'+str(i)}).contents
+            for ing in list_obj:
+                if isinstance(ing, bs4.element.Tag):
+                    ingredients.append(ing.contents[1].attrs['title'])
+            i += 1
+        except:
+            is_working = False
+    return ingredients
 
 
 def get_tools(url):
