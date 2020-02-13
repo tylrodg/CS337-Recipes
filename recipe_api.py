@@ -60,7 +60,8 @@ def get_tools(url):
 
     Returns: tools (list): List of tools used in the recipe.
     '''
-    return ['hi', 'bye']
+    tools = []
+    return tools
 
     pass
 
@@ -73,7 +74,8 @@ def get_methods(url):
 
     Returns: methods (list): List of cooking methods used in the recipe.
     '''
-    return ['hi', 'bye']
+    methods = []
+    return methods
 
     pass
 
@@ -86,7 +88,8 @@ def get_steps(url):
 
     Returns: steps (list): List of steps required to complete the recipe.
     '''
-    return ['hi', 'bye']
+    steps = []
+    return steps
     pass
 
 
