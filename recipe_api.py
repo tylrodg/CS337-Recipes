@@ -89,6 +89,12 @@ def get_steps(url):
     Returns: steps (list): List of steps required to complete the recipe.
     '''
     steps = []
+    bs = get_page(url)
+    list_obj = bs.find(
+        'ol', attrs={'class': 'list-numbers recipe-directions__list'}).contents
+    for step in list_obj:
+        if isinstance(step, bs4.element.Tag):
+            steps.append(step.contents[1].contents[0].strip())
     return steps
     pass
 
