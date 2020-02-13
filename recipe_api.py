@@ -113,3 +113,11 @@ def transform_to_healthy(recipe_info):
 
 def transform_to_italian(recipe_info):
     pass
+
+
+def transform_cut_in_half(recipe_info):
+    pass
+
+
+def transform_double(recipe_info):
+    pass

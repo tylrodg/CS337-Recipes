@@ -29,7 +29,7 @@ def confirm_recipe(url):
             print('Thanks for using ReciParser! Bye!\n')
             sys.exit(0)
         elif response == 'no' or response == 'n':
-            print('Sorry about that! Please provide the correct URL.')
+            print('No worries! Please provide the correct URL.')
             url = input_recipe()
             response = ""
         elif response == 'yes' or response == 'y':
@@ -60,7 +60,7 @@ def fetch_recipe_info(url, name):
 
 def transform_recipe(recipe_info):
     print(
-        "What type of transformation would you like to apply to the recipe? Type [o]ptions to show what transformations are available.")
+        "Which transformation would you like to apply to the recipe? Type [o]ptions to show what transformations are available.")
     transformed_recipe = {}
     available_transforms = [t for t in dir(recipe_api) if "transform" in t]
     transform = ""
@@ -83,12 +83,15 @@ def transform_recipe(recipe_info):
 
 
 def main():
-
+    # Begin process
     print('Welcome to ReciParser! Let\'s get started! \nPlease provide a valid AllRecipes.com URL or type \'quit\' to quit the program. You can quit whenever we request your input.\n')
-
+    # Request recipe
     url, name = input_recipe()
+    # Confirm URL submitted
     url = confirm_recipe(url)
+    # Get data from allrecipes.com
     recipe_info = fetch_recipe_info(url, name)
+    # Display data
     for i in recipe_info:
         if i == 'recipe_name':
             print('Recipe Name: ' + recipe_info[i])
@@ -97,6 +100,8 @@ def main():
             for e in recipe_info[i]:
                 print('- ' + e)
         print('\n')
+    
+    # Apply transformations (allows for multiple until user wants to stop)
     nq = True
     while nq:
         transformed_recipe = transform_recipe(recipe_info)
