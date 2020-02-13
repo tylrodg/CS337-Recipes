@@ -4,6 +4,7 @@ import re
 
 import recipe_api
 
+# possible edge case: pages formatted like https://www.allrecipes.com/recipe/137464/authentic-paella/
 
 def input_recipe():
     url = ""
