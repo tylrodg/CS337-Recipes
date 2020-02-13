@@ -1,5 +1,5 @@
-# TheGoldenGlobes_CS337
-Northwestern CS 337 NLP Project 2
+# CS337-Recipes
+Northwestern CS 337 NLP Project 2: Scrape recipes from allrecipes.com and apply various transformations. 
 
 ## Group Members
 Ryan Jeon, Meera Ramakrishnan, Tyler Rodgers, Mason Secky-Koebel 
