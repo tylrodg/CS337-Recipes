@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import bs4
 import requests
 import nltk
+nltk.download()
 
 
 def get_page(url):
