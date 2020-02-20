@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import bs4
 import requests
 import nltk
+import fractions
 
 
 def get_page(url):
@@ -115,8 +116,51 @@ def transform_to_italian(recipe_info):
 
 
 def transform_cut_in_half(recipe_info):
-    pass
+    new_lst = [ ]
+    for ingredient in recipe_info['ingredients']:
+        ig = ingredient.split()
+        for j, i in enumerate(ig):
+            if ")" in i:
+                i = i.replace(")", "")
+            if "(" in i:
+                i = i.replace("(", "")
+            try:
+                fraction_str = i + " " + ig[j+1]
+                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj)/2))
+                ingredient = ingredient.replace(fraction_str, str(divided))
+            except:
+                try:
+                    k = str(round(float(fractions.Fraction(i)/2), 4))
+                    ingredient = ingredient.replace(i, k)
+                except:
+                    pass
+        new_lst.append(ingredient)
+    recipe_info['ingredients'] = new_lst
+    return recipe_info
+
 
 
 def transform_double(recipe_info):
-    pass
+    new_lst = [ ]
+    for ingredient in recipe_info['ingredients']:
+        ig = ingredient.split()
+        for j, i in enumerate(ig):
+            if ")" in i:
+                i = i.replace(")", "")
+            if "(" in i:
+                i = i.replace("(", "")
+            try:
+                fraction_str = i + " " + ig[j+1]
+                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj)*2))
+                ingredient = ingredient.replace(fraction_str, str(divided))
+            except:
+                try:
+                    k = str(round(float(fractions.Fraction(i)*2), 4))
+                    ingredient = ingredient.replace(i, k)
+                except:
+                    pass
+        new_lst.append(ingredient)
+    recipe_info['ingredients'] = new_lst
+    return recipe_info
