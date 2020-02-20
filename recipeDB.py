@@ -52,6 +52,7 @@ class RecipeDB:
             }
 
     # function that determines if there is something present in some collection
+    # this is run for all of the methods so I am making a function
     def _presentInCollection(self, item, collection):
         # for all of the elements in the collection
         for i in collection:
@@ -61,9 +62,21 @@ class RecipeDB:
                 # item was not in collection
                 return False
 
+    # checking if some ingredient is present in a collection 
     def _isIngredientType(self, ingredient, collection):
         return self._presentInCollection(ingredient.name, collection)
 
     def _isMeatPresent(self, ingredient):
         meatIsPresent = self._isIngredientType(ingredient, self.meat)
         return meatIsPresent
+
+    # checks to see if an ingredient is healthy
+    def _isUnhealthy(self, ingredient):
+        # keys() returns all of the dictionary keys as a list
+        return self._isIngredientType(ingredient, self.unhealthyToHealthy.keys())
+
+    # checks to see if an ingredient is unhealthy
+    def _isHealthy(self, ingredient):
+        return self._isIngredientType(ingredient, self.healthyToUnhealthy.keys())
+
+    
