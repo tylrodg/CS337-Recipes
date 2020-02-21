@@ -36,7 +36,7 @@ class RecipeDB:
             self.liquidMeasurements = json_data["measurement"]["liquids"]
 
             # set of cooking methods
-            self.primaryMetods = json_data["methods"]["primary"]
+            self.primaryMethods = json_data["methods"]["primary"]
             self.secondaryMethods = json_data["methods"]["secondary"]
 
             # parse and get the healthy to unhealthy transformations

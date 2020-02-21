@@ -5,6 +5,10 @@ import nltk
 import fractions
 from recipeDB import RecipeDB
 
+
+
+db = RecipeDB('recipeDB.json') # Get the DB data
+
 def get_page(url):
     res = requests.get(url)
     html = res.content
@@ -65,17 +69,13 @@ def common_member(a, b):
 def get_tools(url):
     """
     Scrape the given url for the name of the recipe.
-
     Parameters: url (string): Link to an AllRecipes recipe.
-
     Returns: tools (list): List of tools used in the recipe.
     """
+    global db
     steps = get_steps(url)
 
-
-    db = RecipeDB('recipeDB.json') # Get the DB data
     possible_tools = db.tools    
-
 
     tools = []
 
@@ -99,14 +99,27 @@ def get_tools(url):
 def get_methods(url):
     """
     Scrape the given url for the name of the recipe.
-
     Parameters: url (string): Link to an AllRecipes recipe.
-
     Returns: methods (list): List of cooking methods used in the recipe.
     """
-    methods = []
-    return methods
 
+    global db
+    steps = get_steps(url)
+
+    possible_methods = db.primaryMethods
+    possible_methods.extend( db.secondaryMethods )
+
+    methods = []
+
+    for step in steps:
+        sl = step.lower().split(" ")
+        for method in possible_methods:
+            if method.isspace() or method in methods or len(method) == 0:
+                continue
+            if method.lower() in step.lower():
+                methods.append( method )
+
+    return methods
 
 def get_steps(url):
     """
