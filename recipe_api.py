@@ -59,10 +59,24 @@ def get_tools(url):
 
     Returns: tools (list): List of tools used in the recipe.
     """
+    steps = get_steps(url)
+    with open("toolList.txt") as f:
+        content = f.readlines()
+    possible_tools = [x.strip() for x in content]
+
     tools = []
+
+    for step in steps:
+        if "cut" in step.lower() and ("Knife" not in tools):
+            tools.append( "Knife" )
+        for tool in possible_tools:
+            if tool.isspace() or tool in tools or len(tool) == 0:
+                continue
+            if tool.lower() in step.lower():
+                tools.append( tool )
+
     return tools
 
-    pass
 
 
 def get_methods(url):
@@ -75,8 +89,6 @@ def get_methods(url):
     """
     methods = []
     return methods
-
-    pass
 
 
 def get_steps(url):
