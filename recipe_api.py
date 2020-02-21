@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import bs4
 import requests
 import nltk
+import fractions
 
 
 def get_page(url):
@@ -58,10 +59,24 @@ def get_tools(url):
 
     Returns: tools (list): List of tools used in the recipe.
     """
+    steps = get_steps(url)
+    with open("toolList.txt") as f:
+        content = f.readlines()
+    possible_tools = [x.strip() for x in content]
+
     tools = []
+
+    for step in steps:
+        if "cut" in step.lower() and ("Knife" not in tools):
+            tools.append( "Knife" )
+        for tool in possible_tools:
+            if tool.isspace() or tool in tools or len(tool) == 0:
+                continue
+            if tool.lower() in step.lower():
+                tools.append( tool )
+
     return tools
 
-    pass
 
 
 def get_methods(url):
@@ -74,8 +89,6 @@ def get_methods(url):
     """
     methods = []
     return methods
-
-    pass
 
 
 def get_steps(url):
@@ -115,8 +128,51 @@ def transform_to_italian(recipe_info):
 
 
 def transform_cut_in_half(recipe_info):
-    pass
+    new_lst = [ ]
+    for ingredient in recipe_info['ingredients']:
+        ig = ingredient.split()
+        for j, i in enumerate(ig):
+            if ")" in i:
+                i = i.replace(")", "")
+            if "(" in i:
+                i = i.replace("(", "")
+            try:
+                fraction_str = i + " " + ig[j+1]
+                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj)/2))
+                ingredient = ingredient.replace(fraction_str, str(divided))
+            except:
+                try:
+                    k = str(round(float(fractions.Fraction(i)/2), 4))
+                    ingredient = ingredient.replace(i, k)
+                except:
+                    pass
+        new_lst.append(ingredient)
+    recipe_info['ingredients'] = new_lst
+    return recipe_info
+
 
 
 def transform_double(recipe_info):
-    pass
+    new_lst = [ ]
+    for ingredient in recipe_info['ingredients']:
+        ig = ingredient.split()
+        for j, i in enumerate(ig):
+            if ")" in i:
+                i = i.replace(")", "")
+            if "(" in i:
+                i = i.replace("(", "")
+            try:
+                fraction_str = i + " " + ig[j+1]
+                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj)*2))
+                ingredient = ingredient.replace(fraction_str, str(divided))
+            except:
+                try:
+                    k = str(round(float(fractions.Fraction(i)*2), 4))
+                    ingredient = ingredient.replace(i, k)
+                except:
+                    pass
+        new_lst.append(ingredient)
+    recipe_info['ingredients'] = new_lst
+    return recipe_info
