@@ -3,7 +3,7 @@ import bs4
 import requests
 import nltk
 import fractions
-
+from recipeDB import RecipeDB
 
 def get_page(url):
     res = requests.get(url)
@@ -51,6 +51,17 @@ def get_ingredients(url):
     return ingredients
 
 
+def common_member(a, b): 
+    """
+    Returns true if list a and b have common elements
+    """
+    a_set = set(a) 
+    b_set = set(b) 
+    if (a_set & b_set): 
+        return True 
+    else: 
+        return False
+
 def get_tools(url):
     """
     Scrape the given url for the name of the recipe.
@@ -60,15 +71,21 @@ def get_tools(url):
     Returns: tools (list): List of tools used in the recipe.
     """
     steps = get_steps(url)
-    with open("toolList.txt") as f:
-        content = f.readlines()
-    possible_tools = [x.strip() for x in content]
+
+
+    db = RecipeDB('recipeDB.json') # Get the DB data
+    possible_tools = db.tools    
+
 
     tools = []
 
     for step in steps:
-        if "cut" in step.lower() and ("Knife" not in tools):
-            tools.append( "Knife" )
+        sl = step.lower().split(" ")
+        if common_member(["cut", "slice"], sl) and ("Knife" not in tools):
+            tools.append( "knife" )
+        if common_member(["stir"], sl) and ("Spoon" not in tools):
+            tools.append( "spoon" )
+
         for tool in possible_tools:
             if tool.isspace() or tool in tools or len(tool) == 0:
                 continue
