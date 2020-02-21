@@ -2,7 +2,6 @@
 Thumbs.db
 
 # Project Files:
-*.json
 __pycache__
 *.tsv
 *.gz

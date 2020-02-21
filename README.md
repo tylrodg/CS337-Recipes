@@ -17,4 +17,4 @@ $ python3 interface.py
 You must interact with the program via your terminal to progress.
 
 ## Other Code Sources
-For the database of recipe keywords, part of the DB was gathered from this former project (because it would have taken a bit longer by manually typing): https://github.com/rojaswestall/cs337/blob/master/project2/kb.json
+For the database of recipe keywords, part of the DB was gathered from this former project (this was mainly to save time with typing): https://github.com/rojaswestall/cs337/blob/master/project2/kb.json
