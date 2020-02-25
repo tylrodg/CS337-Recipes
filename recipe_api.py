@@ -3,9 +3,13 @@ import bs4
 import requests
 import nltk
 import fractions
+# spoonacular and api key
+import spoonacular as sp
+
+# other files
 from recipeDB import RecipeDB
-
-
+from spoonacularKey import spoonacularAPI
+api = spoonacularAPI()
 
 db = RecipeDB('recipeDB.json') # Get the DB data
 

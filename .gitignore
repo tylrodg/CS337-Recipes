@@ -8,6 +8,7 @@ __pycache__
 *.swp
 *.pyc
 *.json
+spoonacularKey.py
 
 !recipeDB.json
 
