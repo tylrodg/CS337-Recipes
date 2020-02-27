@@ -3,15 +3,18 @@ import bs4
 import requests
 import nltk
 import fractions
+
 # spoonacular and api key
 import spoonacular as sp
 
 # other files
 from recipeDB import RecipeDB
 from spoonacularKey import spoonacularAPI
+
 api = spoonacularAPI()
 
-db = RecipeDB('recipeDB.json') # Get the DB data
+db = RecipeDB("recipeDB.json")  # Get the DB data
+
 
 def get_page(url):
     res = requests.get(url)
@@ -59,16 +62,17 @@ def get_ingredients(url):
     return ingredients
 
 
-def common_member(a, b): 
+def common_member(a, b):
     """
     Returns true if list a and b have common elements
     """
-    a_set = set(a) 
-    b_set = set(b) 
-    if (a_set & b_set): 
-        return True 
-    else: 
+    a_set = set(a)
+    b_set = set(b)
+    if a_set & b_set:
+        return True
+    else:
         return False
+
 
 def get_tools(url):
     """
@@ -79,25 +83,24 @@ def get_tools(url):
     global db
     steps = get_steps(url)
 
-    possible_tools = db.tools    
+    possible_tools = db.tools
 
     tools = []
 
     for step in steps:
         sl = step.lower().split(" ")
         if common_member(["cut", "slice"], sl) and ("Knife" not in tools):
-            tools.append( "knife" )
+            tools.append("knife")
         if common_member(["stir"], sl) and ("Spoon" not in tools):
-            tools.append( "spoon" )
+            tools.append("spoon")
 
         for tool in possible_tools:
             if tool.isspace() or tool in tools or len(tool) == 0:
                 continue
             if tool.lower() in step.lower():
-                tools.append( tool )
+                tools.append(tool)
 
     return tools
-
 
 
 def get_methods(url):
@@ -111,7 +114,7 @@ def get_methods(url):
     steps = get_steps(url)
 
     possible_methods = db.primaryMethods
-    possible_methods.extend( db.secondaryMethods )
+    possible_methods.extend(db.secondaryMethods)
 
     methods = []
 
@@ -121,9 +124,10 @@ def get_methods(url):
             if method.isspace() or method in methods or len(method) == 0:
                 continue
             if method.lower() in step.lower():
-                methods.append( method )
+                methods.append(method)
 
     return methods
+
 
 def get_steps(url):
     """
@@ -162,8 +166,8 @@ def transform_to_italian(recipe_info):
 
 
 def transform_cut_in_half(recipe_info):
-    new_lst = [ ]
-    for ingredient in recipe_info['ingredients']:
+    new_lst = []
+    for ingredient in recipe_info["ingredients"]:
         ig = ingredient.split()
         for j, i in enumerate(ig):
             if ")" in i:
@@ -171,25 +175,24 @@ def transform_cut_in_half(recipe_info):
             if "(" in i:
                 i = i.replace("(", "")
             try:
-                fraction_str = i + " " + ig[j+1]
+                fraction_str = i + " " + ig[j + 1]
                 fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
-                divided = float(fractions.Fraction.from_float(float(fraction_obj)/2))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj) / 2))
                 ingredient = ingredient.replace(fraction_str, str(divided))
             except:
                 try:
-                    k = str(round(float(fractions.Fraction(i)/2), 4))
+                    k = str(round(float(fractions.Fraction(i) / 2), 4))
                     ingredient = ingredient.replace(i, k)
                 except:
                     pass
         new_lst.append(ingredient)
-    recipe_info['ingredients'] = new_lst
+    recipe_info["ingredients"] = new_lst
     return recipe_info
 
 
-
 def transform_double(recipe_info):
-    new_lst = [ ]
-    for ingredient in recipe_info['ingredients']:
+    new_lst = []
+    for ingredient in recipe_info["ingredients"]:
         ig = ingredient.split()
         for j, i in enumerate(ig):
             if ")" in i:
@@ -197,16 +200,16 @@ def transform_double(recipe_info):
             if "(" in i:
                 i = i.replace("(", "")
             try:
-                fraction_str = i + " " + ig[j+1]
+                fraction_str = i + " " + ig[j + 1]
                 fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
-                divided = float(fractions.Fraction.from_float(float(fraction_obj)*2))
+                divided = float(fractions.Fraction.from_float(float(fraction_obj) * 2))
                 ingredient = ingredient.replace(fraction_str, str(divided))
             except:
                 try:
-                    k = str(round(float(fractions.Fraction(i)*2), 4))
+                    k = str(round(float(fractions.Fraction(i) * 2), 4))
                     ingredient = ingredient.replace(i, k)
                 except:
                     pass
         new_lst.append(ingredient)
-    recipe_info['ingredients'] = new_lst
+    recipe_info["ingredients"] = new_lst
     return recipe_info
