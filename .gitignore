@@ -10,6 +10,7 @@ __pycache__
 *.json
 
 !recipeDB.json
+config.yaml
 
 # Distribution / packaging
 .Python

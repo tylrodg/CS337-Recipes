@@ -1,5 +1,11 @@
 import spoonacular as sp
-api = sp.API("e2f93d99b1a74bf386d964ee77297c45")
+import yaml
+
+
+with open('config.yaml', 'r') as f:
+    doc = yaml.load(f)
+
+api = sp.API(doc["key"])
 
 def spoonacularAPI():
     return api
