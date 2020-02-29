@@ -2,7 +2,7 @@ import sys
 import json
 import re
 
-import recipe_api
+from recipe_api import *
 
 # possible edge case: pages formatted like https://www.allrecipes.com/recipe/137464/authentic-paella/
 
@@ -22,7 +22,6 @@ def input_recipe():
     )
     return url, name
 
-
 def confirm_recipe(url):
     response = ""
     while not response:
@@ -40,7 +39,6 @@ def confirm_recipe(url):
             print("Sorry I didn't understand that.")
             response = ""
     return url
-
 
 def fetch_recipe_info(url, name):
 
@@ -61,7 +59,6 @@ def fetch_recipe_info(url, name):
         json.dump(recipe_data, recipe_file)
     return recipe_data
 
-
 def transform_recipe(recipe_info):
     print(
         "Which transformation would you like to apply to the recipe? Type [o]ptions to show what transformations are available."
@@ -75,17 +72,43 @@ def transform_recipe(recipe_info):
             print("Thanks for using ReciParser! Bye!\n")
             sys.exit(0)
         elif transform == "option" or transform == "options" or transform == "o" or transform == "Options":
-            for at in available_transforms:
-                print(at)
+            print("\nMake recipe vegan: 'make vegan' \n")
+            print("Make recipe non-vegan: 'make non-vegan' \n")
+            print("Make recipe vegetarian: 'make vegetarian' \n")
+            print("Make recipe non-vegetarian: 'make non-vegetarian' \n")
+            print("Make recipe healthy: 'make healthy' \n")
+            print("Make recipe unhealthy: 'make unhealthy' \n")
+            print("Make recipe italian: 'make italian' \n")
+            print("Cut portion in half: 'half recipe' \n")
+            print("Double Portion: 'double recipe' \n")
+            # reset to blank
             transform = ""
         elif transform not in available_transforms:
             print("Sorry, I didn't quite understand that.")
             transform = ""
         else:
             print(transform + "? Great choice! We'll get on that right away.")
-            transformed_recipe = getattr(recipe_api, transform)(recipe_info)
+            if transform == 'make vegan':
+                transformed_recipe = transform_to_vegan(recipe_info)
+            elif transform == 'make non-vegan':
+                transformed_recipe = transform_from_vegan(recipe_info)
+            elif transform == 'make vegetarian':
+                transformed_recipe = transform_to_veg(recipe_info)
+            elif transform == 'make non-vegetarian':
+                transformed_recipe = transform_from_veg(recipe_info)
+            elif transform == 'make healthy':
+                transformed_recipe = transform_to_healthy(recipe_info)
+            elif transform == 'make unhealthy':
+                transformed_recipe = transform_from_healthy(recipe_info)
+            elif transform == 'make italian':
+                transformed_recipe = transform_italian(recipe_info)
+            elif transform == 'half recipe':
+                transformed_recipe = transform_cut_in_half(recipe_info)
+            elif transform == 'double recipe':
+                transformed_recipe = transform_double(recipe_info)
+            else:
+                transformed_recipe = ""
     return transformed_recipe
-
 
 def main():
     # Begin process
@@ -134,7 +157,6 @@ def main():
                 cont = ""
     print("Thanks for using ReciParser! Bye!\n")
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

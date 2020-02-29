@@ -146,23 +146,35 @@ def get_steps(url):
         if isinstance(step, bs4.element.Tag):
             steps.append(step.contents[1].contents[0].strip())
     return steps
-    pass
 
 
 def transform_to_veg(recipe_info):
-    pass
-
+    recipe = None
+    return recipe
 
 def transform_from_veg(recipe_info):
-    return {"test": ["test again!"]}
+    recipe = None
+    return recipe
 
+def transform_to_vegan(recipe_info):
+    recipe = None
+    return recipe 
+
+def transform_from_vegan(recipe_info):
+    recipe = None
+    return recipe
 
 def transform_to_healthy(recipe_info):
-    pass
+    recipe = None
+    return recipe
 
+def transform_from_healthy(recipe_info):
+    recipe = None
+    return recipe
 
-def transform_to_italian(recipe_info):
-    pass
+def transform_italian(recipe_info):
+    recipe = None
+    return recipe
 
 
 def transform_cut_in_half(recipe_info):
