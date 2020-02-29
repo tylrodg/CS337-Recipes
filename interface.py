@@ -6,7 +6,6 @@ import recipe_api
 
 # possible edge case: pages formatted like https://www.allrecipes.com/recipe/137464/authentic-paella/
 
-
 def input_recipe():
     url = ""
     while not url:
@@ -75,7 +74,7 @@ def transform_recipe(recipe_info):
         if transform == "quit":
             print("Thanks for using ReciParser! Bye!\n")
             sys.exit(0)
-        elif transform == "option" or transform == "options" or transform == "o":
+        elif transform == "option" or transform == "options" or transform == "o" or transform == "Options":
             for at in available_transforms:
                 print(at)
             transform = ""

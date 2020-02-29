@@ -11,7 +11,7 @@ class RecipeDB:
             # load the data
             json_data = json.load(f)
             # process all of the content in the database
-            # for example, set self.tools to be an array of tools
+            # for example, set self.tools to be an array of tools 
             self.tools = json_data["tools"]
 
             # set of descriptions
