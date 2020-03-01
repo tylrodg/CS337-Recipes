@@ -165,12 +165,39 @@ def transform_from_vegan(recipe_info):
     return recipe
 
 def transform_to_healthy(recipe_info):
-    recipe = None
-    return recipe
+
+    global db
+
+
+    new_info = recipe_info
+    to_healthy = db.unhealthyToHealthy
+
+    for i in range( len( recipe_info["ingredients"] ) ):
+        for key in to_healthy:
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_healthy[key])
+
+    for i in range( len( recipe_info["steps"] ) ):
+        for key in to_healthy:
+            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_healthy[key])
+
+    return new_info
 
 def transform_from_healthy(recipe_info):
-    recipe = None
-    return recipe
+
+    global db
+
+    new_info = recipe_info
+    to_unhealthy = db.healthyToUnhealthy
+
+    for i in range( len( recipe_info["ingredients"] ) ):
+        for key in to_unhealthy:
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_unhealthy[key])
+
+    for i in range( len( recipe_info["steps"] ) ):
+        for key in to_unhealthy:
+            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_unhealthy[key])
+
+    return new_info
 
 def transform_italian(recipe_info):
     recipe = None
