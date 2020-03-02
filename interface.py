@@ -1,10 +1,7 @@
 import sys
 import json
 import re
-
-from recipe_api import *
-
-# possible edge case: pages formatted like https://www.allrecipes.com/recipe/137464/authentic-paella/
+import recipe_api
 
 def input_recipe():
     url = ""
@@ -72,15 +69,8 @@ def transform_recipe(recipe_info):
             print("Thanks for using ReciParser! Bye!\n")
             sys.exit(0)
         elif transform == "option" or transform == "options" or transform == "o" or transform == "Options":
-            print("\nMake recipe vegan: 'make vegan' \n")
-            print("Make recipe non-vegan: 'make non-vegan' \n")
-            print("Make recipe vegetarian: 'make vegetarian' \n")
-            print("Make recipe non-vegetarian: 'make non-vegetarian' \n")
-            print("Make recipe healthy: 'make healthy' \n")
-            print("Make recipe unhealthy: 'make unhealthy' \n")
-            print("Make recipe italian: 'make italian' \n")
-            print("Cut portion in half: 'half recipe' \n")
-            print("Double Portion: 'double recipe' \n")
+            for at in available_transforms:
+                print(at)
             # reset to blank
             transform = ""
         elif transform not in available_transforms:
@@ -88,26 +78,7 @@ def transform_recipe(recipe_info):
             transform = ""
         else:
             print(transform + "? Great choice! We'll get on that right away.")
-            if transform == 'make vegan':
-                transformed_recipe = transform_to_vegan(recipe_info)
-            elif transform == 'make non-vegan':
-                transformed_recipe = transform_from_vegan(recipe_info)
-            elif transform == 'make vegetarian':
-                transformed_recipe = transform_to_veg(recipe_info)
-            elif transform == 'make non-vegetarian':
-                transformed_recipe = transform_from_veg(recipe_info)
-            elif transform == 'make healthy':
-                transformed_recipe = transform_to_healthy(recipe_info)
-            elif transform == 'make unhealthy':
-                transformed_recipe = transform_from_healthy(recipe_info)
-            elif transform == 'make italian':
-                transformed_recipe = transform_italian(recipe_info)
-            elif transform == 'half recipe':
-                transformed_recipe = transform_cut_in_half(recipe_info)
-            elif transform == 'double recipe':
-                transformed_recipe = transform_double(recipe_info)
-            else:
-                transformed_recipe = ""
+            transformed_recipe = getattr(recipe_api, transform)(recipe_info)
     return transformed_recipe
 
 def main():

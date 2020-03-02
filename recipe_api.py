@@ -1,11 +1,15 @@
 from bs4 import BeautifulSoup
+from vegetarianHelper import replacer, nonVegChecker, helper
 import bs4
 import requests
 import nltk
 import fractions
+import re
+import string
+import difflib
 
 # spoonacular and api key
-import spoonacular as sp
+#import spoonacular as sp
 
 # other files
 from recipeDB import RecipeDB
@@ -149,12 +153,20 @@ def get_steps(url):
 
 
 def transform_to_veg(recipe_info):
-    recipe = None
-    return recipe
+    return helper(recipe_info, "vegetarian")
 
 def transform_from_veg(recipe_info):
-    recipe = None
-    return recipe
+    print(recipe_info)
+    """
+    check if a suitable substitute exists; if so, replace it
+        
+    otherwise, add new meat
+    """
+    b = nonVegChecker(recipe_info)
+    if b == "True":
+        return helper(recipe_info, "nonVegetarian")
+    else:
+        return replacer(recipe_info)
 
 def transform_to_vegan(recipe_info):
     recipe = None

@@ -10,3 +10,4 @@ api = sp.API(doc["key"])
 
 def spoonacularAPI():
     return api
+
