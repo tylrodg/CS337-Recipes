@@ -177,7 +177,6 @@ def transform_from_vegan(recipe_info):
     return recipe
 
 def transform_to_healthy(recipe_info):
-
     global db
 
 
