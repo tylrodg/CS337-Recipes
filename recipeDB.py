@@ -50,6 +50,7 @@ class RecipeDB:
                 pairs["unhealthy"]: pairs["healthy"]
                 for pairs in healthyAndUnhealthy
             }
+            self.chinese = json_data["to_chinese"]
 
     # function that determines if there is something present in some collection
     # this is run for all of the methods so I am making a function

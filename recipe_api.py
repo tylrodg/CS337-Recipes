@@ -3,6 +3,8 @@ import bs4
 import requests
 import nltk
 import fractions
+from difflib import SequenceMatcher
+import json
 
 # spoonacular and api key
 import spoonacular as sp
@@ -28,13 +30,14 @@ def get_name(url):
     """
     Scrape the given url for the name of the recipe.
 
-    Parameters: url (string): Link to an AllRecipes recipe. 
+    Parameters: url (string): Link to an AllRecipes recipe.
 
     Returns: recipe_name (string): Name of recipe.
     """
     recipe_name = ""
     bs = get_page(url)
-    recipe_name = bs.find("h1", attrs={"id": "recipe-main-content"}).contents[0]
+    recipe_name = bs.find(
+        "h1", attrs={"id": "recipe-main-content"}).contents[0]
     return recipe_name
 
 
@@ -52,7 +55,8 @@ def get_ingredients(url):
     is_working = True
     while is_working:
         try:
-            list_obj = bs.find("ul", attrs={"id": "lst_ingredients_" + str(i)}).contents
+            list_obj = bs.find(
+                "ul", attrs={"id": "lst_ingredients_" + str(i)}).contents
             for ing in list_obj:
                 if isinstance(ing, bs4.element.Tag):
                     ingredients.append(ing.contents[1].attrs["title"])
@@ -161,8 +165,40 @@ def transform_to_healthy(recipe_info):
     pass
 
 
-def transform_to_italian(recipe_info):
-    pass
+def transform_to_chinese(recipe_info):
+
+    # ingredients mapping
+    new_ingredients = []
+    new_ing_names = []
+    data = api.parse_ingredients('\n'.join(recipe_info['ingredients']))
+    ing_classified = json.loads(data.content)
+    repl_dict = {i['name']: [str(i['amount']), i['unit'], i['originalName']]
+                 for i in ing_classified}
+    print(repl_dict)
+    for ingredient in repl_dict:
+        repl_dict[ingredient].append(['', 0])
+        # ing_tok = nltk.word_tokenize(ingredient)
+        for chinese_ingredient in db.chinese:
+            # c_tok = nltk.word_tokenize(c_i)
+            # if len(set(ing_tok) & set(c_tok))/len(set(ing_tok))>=.6:
+            s = SequenceMatcher(None, ingredient, chinese_ingredient)
+            temp_score = s.ratio()
+            if temp_score > repl_dict[ingredient][3][1]:
+                repl_dict[ingredient][3][0] = db.chinese[chinese_ingredient]
+                repl_dict[ingredient][3][1] = temp_score
+        # if no good match in chinese ingredient db, keep ingredient the same
+        if repl_dict[ingredient][3][1] < .7 or repl_dict[ingredient][3][0] in new_ing_names:
+            ing_str = ' '.join(repl_dict[ingredient][0:3])
+            new_ingredients.append(ing_str)
+
+        # otherwise, replace (but w/ same ratio)
+        else:
+            ing_str = ' '.join(
+                [repl_dict[ingredient][0], repl_dict[ingredient][1], repl_dict[ingredient][3][0]])
+            new_ingredients.append(ing_str)
+            new_ing_names.append(repl_dict[ingredient][3][0])
+    print(new_ingredients)
+    recipe_info['ingredients']=new_ingredients
 
 
 def transform_cut_in_half(recipe_info):
@@ -176,8 +212,10 @@ def transform_cut_in_half(recipe_info):
                 i = i.replace("(", "")
             try:
                 fraction_str = i + " " + ig[j + 1]
-                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
-                divided = float(fractions.Fraction.from_float(float(fraction_obj) / 2))
+                fraction_obj = sum(
+                    map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(
+                    float(fraction_obj) / 2))
                 ingredient = ingredient.replace(fraction_str, str(divided))
             except:
                 try:
@@ -201,8 +239,10 @@ def transform_double(recipe_info):
                 i = i.replace("(", "")
             try:
                 fraction_str = i + " " + ig[j + 1]
-                fraction_obj = sum(map(fractions.Fraction, fraction_str.split()))
-                divided = float(fractions.Fraction.from_float(float(fraction_obj) * 2))
+                fraction_obj = sum(
+                    map(fractions.Fraction, fraction_str.split()))
+                divided = float(fractions.Fraction.from_float(
+                    float(fraction_obj) * 2))
                 ingredient = ingredient.replace(fraction_str, str(divided))
             except:
                 try:
