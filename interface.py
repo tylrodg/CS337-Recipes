@@ -1,10 +1,7 @@
 import sys
 import json
 import re
-
 import recipe_api
-
-# possible edge case: pages formatted like https://www.allrecipes.com/recipe/137464/authentic-paella/
 
 def input_recipe():
     url = ""
@@ -21,7 +18,6 @@ def input_recipe():
         "Thanks for submitting that URL! The recipe you requested was " + name + ".\n"
     )
     return url, name
-
 
 def confirm_recipe(url):
     response = ""
@@ -40,7 +36,6 @@ def confirm_recipe(url):
             print("Sorry I didn't understand that.")
             response = ""
     return url
-
 
 def fetch_recipe_info(url, name):
 
@@ -61,7 +56,6 @@ def fetch_recipe_info(url, name):
         json.dump(recipe_data, recipe_file)
     return recipe_data
 
-
 def transform_recipe(recipe_info):
     print(
         "Which transformation would you like to apply to the recipe? Type [o]ptions to show what transformations are available."
@@ -77,6 +71,7 @@ def transform_recipe(recipe_info):
         elif transform == "option" or transform == "options" or transform == "o" or transform == "Options":
             for at in available_transforms:
                 print(at)
+            # reset to blank
             transform = ""
         elif transform not in available_transforms:
             print("Sorry, I didn't quite understand that.")
@@ -85,7 +80,6 @@ def transform_recipe(recipe_info):
             print(transform + "? Great choice! We'll get on that right away.")
             transformed_recipe = getattr(recipe_api, transform)(recipe_info)
     return transformed_recipe
-
 
 def main():
     # Begin process
@@ -134,7 +128,6 @@ def main():
                 cont = ""
     print("Thanks for using ReciParser! Bye!\n")
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

@@ -1,13 +1,17 @@
 from bs4 import BeautifulSoup
+from vegetarianHelper import replacer, nonVegChecker, helper
 import bs4
 import requests
 import nltk
 import fractions
 from difflib import SequenceMatcher
 import json
+import re
+import string
+import difflib
 
 # spoonacular and api key
-import spoonacular as sp
+#import spoonacular as sp
 
 # other files
 from recipeDB import RecipeDB
@@ -150,20 +154,65 @@ def get_steps(url):
         if isinstance(step, bs4.element.Tag):
             steps.append(step.contents[1].contents[0].strip())
     return steps
-    pass
 
 
 def transform_to_veg(recipe_info):
-    pass
-
+    return helper(recipe_info, "vegetarian")
 
 def transform_from_veg(recipe_info):
-    return {"test": ["test again!"]}
+    print(recipe_info)
+    """
+    check if a suitable substitute exists; if so, replace it
+        
+    otherwise, add new meat
+    """
+    b = nonVegChecker(recipe_info)
+    if b == "True":
+        return helper(recipe_info, "nonVegetarian")
+    else:
+        return replacer(recipe_info)
 
+def transform_to_vegan(recipe_info):
+    recipe = None
+    return recipe 
+
+def transform_from_vegan(recipe_info):
+    recipe = None
+    return recipe
 
 def transform_to_healthy(recipe_info):
-    pass
+    global db
 
+
+    new_info = recipe_info
+    to_healthy = db.unhealthyToHealthy
+
+    for i in range( len( recipe_info["ingredients"] ) ):
+        for key in to_healthy:
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_healthy[key])
+
+    for i in range( len( recipe_info["steps"] ) ):
+        for key in to_healthy:
+            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_healthy[key])
+
+    return new_info
+
+def transform_from_healthy(recipe_info):
+
+    global db
+
+    new_info = recipe_info
+    to_unhealthy = db.healthyToUnhealthy
+
+    for i in range( len( recipe_info["ingredients"] ) ):
+        for key in to_unhealthy:
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_unhealthy[key])
+
+    for i in range( len( recipe_info["steps"] ) ):
+        for key in to_unhealthy:
+            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_unhealthy[key])
+
+    return new_info
 
 def transform_to_chinese(recipe_info):
 
