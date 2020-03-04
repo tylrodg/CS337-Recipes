@@ -44,10 +44,10 @@ vegan = {
     "sausage": "veggie sausage",
     "bacon": "tempeh strips",
     "turkey": "soy patties",
-    "chicken breast": "seitan tenders",
-    "chicken leg": "seitan tenders",
-    "chicken thigh": "seitan tenders",
-    "chicken nuggets": "soy nuggets",
+    "chicken breast": "beyond meat chicken breast",
+    "chicken leg": "beyond meat chicken leg",
+    "chicken thigh": "beyond meat chicken thigh",
+    "chicken nuggets": "soy nuggets, non-dairy crust",
     "chicken soup": "vegetable soup",
     "chicken": "tofu",
     "jerky": "oven-dried eggplant",
@@ -79,7 +79,18 @@ vegan = {
     "crabmeat": "spicy tofu",
     "scallop": "pieces of cut and cubed tofu",
     "scallops": "pieces of cut and cubed tofu",
-    "marshmallow": "gelatin-free marshmallow",  
+    "marshmallow": "gelatin-free marshmallow",
+    "milk": "almond milk",
+    "butter": "coconut oil",
+    "cheese": "cashew-based cheese alternative",
+    "yogurt": "almond milk-based yogurt alternative",
+    "carmel": "dairy-free carmel",
+    "cream": "dairy-free cream",
+    "whey": "hemp protein",
+    "casein": "hemp",
+    "dressing": "dairy-free dressing",
+    "tomato sauce": "non-dairy tomato sauce",
+    "honey": "maple syrup"
 }
 
 nonVegan = {
@@ -104,7 +115,7 @@ nonVegan = {
     "veggie patties": "chicken patties",
     "veg patties": "chicken patties",
     "soy turkey": "turkey",
-    "seitan tenders": "chicken thigh",
+    "beyond meant tenders": "chicken thigh",
     "soy chicken": "chicken",
     "veggie jerky": "jerky",
     "tempeh": "calamari",
@@ -224,7 +235,6 @@ measurements = [
 replacements = {
     "chocolate": ["3 strips of crispy bacon", "Chop bacon and sprinkle on top."],
     "almonds": ["3 strips of crispy bacon", "Chop bacon and sprinkle on top."],
-    "coconut": ["4 marshmallows", "Chop gelatin marshmallows finely and garnish."],
     "baked good": [
         "1 jar (2 cups) ready-to-use mincemeat",
         "Ensure that you stir mincemeat with dry ingredients.",
@@ -254,7 +264,7 @@ replacements = {
 }
 
 
-def replacer(recipe_info):
+def veganReplacer(recipe_info):
     str1 = ""
     keys_lst = list(replacements.keys())
     for i in recipe_info["ingredients"]:
@@ -288,16 +298,21 @@ def nonVeganChecker(recipe_info):
     return "False"
 
 
-def helper(recipe_info, chosen_dict):
+def veganHelper(recipe_info, chosen_dict):
     ingr_lst = []
     step_lst = []
     keys_lst = {}
 
     if chosen_dict == "vegan":
         chosen_dict = vegan
-    else:
+    if chosen_dict == "nonVegan":
         chosen_dict = nonVegan
 
+    # add a disclaimer
+    ingr_lst.append(
+            "It is important to recognize that when choosing a vegan recipe to avoid milk and gelatin. Please read the label carefully to check whether or not the ingredients used contain any milk, meat, or any other animal-derived products: \n"
+        )
+    # generate the list
     for i in recipe_info["ingredients"]:
         no_punc = i.translate(str.maketrans("", "", string.punctuation))
         meat_matches = [x for x in chosen_dict if x in no_punc]
@@ -342,6 +357,7 @@ def helper(recipe_info, chosen_dict):
                     veg_substitute = chosen_dict[m[0]]
                 i = i.replace(meat, veg_substitute)
 
+        # generate the steps
         step_lst.append(i)
 
     recipe_info["steps"] = step_lst
