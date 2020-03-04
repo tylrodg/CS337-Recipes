@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from vegetarianHelper import replacer, nonVegChecker, helper
+from veganHelper import veganReplacer, veganHelper, nonVeganChecker
 import bs4
 import requests
 import nltk
@@ -175,13 +176,16 @@ def transform_from_veg(recipe_info):
 
 
 def transform_to_vegan(recipe_info):
-    recipe = None
-    return recipe
-
+    recipe = veganHelper(recipe_info, "vegan")
+    return recipe 
 
 def transform_from_vegan(recipe_info):
-    recipe = None
-    return recipe
+    print(recipe_info)
+    recipe = nonVeganChecker(recipe_info)
+    if (recipe == "True"):
+        return veganHelper(recipe_info, "nonVegan")
+    else:
+        return veganReplacer(recipe_info)
 
 
 def transform_to_healthy(recipe_info):
