@@ -159,6 +159,7 @@ def get_steps(url):
 def transform_to_veg(recipe_info):
     return helper(recipe_info, "vegetarian")
 
+
 def transform_from_veg(recipe_info):
     print(recipe_info)
     """
@@ -172,30 +173,34 @@ def transform_from_veg(recipe_info):
     else:
         return replacer(recipe_info)
 
+
 def transform_to_vegan(recipe_info):
     recipe = None
-    return recipe 
+    return recipe
+
 
 def transform_from_vegan(recipe_info):
     recipe = None
     return recipe
 
+
 def transform_to_healthy(recipe_info):
     global db
-
 
     new_info = recipe_info
     to_healthy = db.unhealthyToHealthy
 
-    for i in range( len( recipe_info["ingredients"] ) ):
+    for i in range(len(recipe_info["ingredients"])):
         for key in to_healthy:
-            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_healthy[key])
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(
+                key, to_healthy[key])
 
-    for i in range( len( recipe_info["steps"] ) ):
+    for i in range(len(recipe_info["steps"])):
         for key in to_healthy:
-            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_healthy[key])
-
+            new_info["steps"][i] = recipe_info["steps"][i].replace(
+                key, to_healthy[key])
     return new_info
+
 
 def transform_from_healthy(recipe_info):
 
@@ -204,39 +209,71 @@ def transform_from_healthy(recipe_info):
     new_info = recipe_info
     to_unhealthy = db.healthyToUnhealthy
 
-    for i in range( len( recipe_info["ingredients"] ) ):
+    for i in range(len(recipe_info["ingredients"])):
         for key in to_unhealthy:
-            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(key, to_unhealthy[key])
+            new_info["ingredients"][i] = recipe_info["ingredients"][i].replace(
+                key, to_unhealthy[key])
 
-    for i in range( len( recipe_info["steps"] ) ):
+    for i in range(len(recipe_info["steps"])):
         for key in to_unhealthy:
-            new_info["steps"][i] = recipe_info["steps"][i].replace(key, to_unhealthy[key])
+            new_info["steps"][i] = recipe_info["steps"][i].replace(
+                key, to_unhealthy[key])
 
     return new_info
 
-def transform_to_chinese(recipe_info):
 
+def shorter_name(spoonacular_name, originalName):
+    if not spoonacular_name:
+        return originalName
+    if not originalName:
+        return spoonacular_name
+    if len(spoonacular_name) < len(originalName):
+        return spoonacular_name
+    return originalName
+
+
+def transform_to_chinese(recipe_info):
+    return cuisine_transformer(recipe_info, 'chinese')
+
+def transform_to_indian(recipe_info):
+    return cuisine_transformer(recipe_info, 'indian')
+
+def cuisine_transformer(recipe_info, cuisine):
+    cuisine_db = getattr(db, cuisine)
     # ingredients mapping
     new_ingredients = []
-    new_ing_names = []
+    new_ing_names = dict()
+    new_ing_names['new_vals'] = []
     data = api.parse_ingredients('\n'.join(recipe_info['ingredients']))
     ing_classified = json.loads(data.content)
-    repl_dict = {i['name']: [str(i['amount']), i['unit'], i['originalName']]
-                 for i in ing_classified}
+    if not ing_classified:
+        return recipe_info
+    repl_dict = dict()
+    for i in ing_classified:
+        name = i['name']
+        originalName = i['originalName']
+        amount = str(i['amount'])
+        unit = i['unitShort']
+        repl_dict[shorter_name(name, originalName)] = [
+            amount, unit, originalName]
     print(repl_dict)
     for ingredient in repl_dict:
+        db_name = ''
+        good_matches = []
         repl_dict[ingredient].append(['', 0])
         # ing_tok = nltk.word_tokenize(ingredient)
-        for chinese_ingredient in db.chinese:
+        for amer_ingredient in cuisine_db:
             # c_tok = nltk.word_tokenize(c_i)
             # if len(set(ing_tok) & set(c_tok))/len(set(ing_tok))>=.6:
-            s = SequenceMatcher(None, ingredient, chinese_ingredient)
+            s = SequenceMatcher(None, ingredient, amer_ingredient)
             temp_score = s.ratio()
             if temp_score > repl_dict[ingredient][3][1]:
-                repl_dict[ingredient][3][0] = db.chinese[chinese_ingredient]
+                db_name = amer_ingredient
+                repl_dict[ingredient][3][0] = cuisine_db[amer_ingredient]
                 repl_dict[ingredient][3][1] = temp_score
+                good_matches.append(amer_ingredient)
         # if no good match in chinese ingredient db, keep ingredient the same
-        if repl_dict[ingredient][3][1] < .7 or repl_dict[ingredient][3][0] in new_ing_names:
+        if repl_dict[ingredient][3][1] < .65 or repl_dict[ingredient][3][0] in new_ing_names['new_vals']:
             ing_str = ' '.join(repl_dict[ingredient][0:3])
             new_ingredients.append(ing_str)
 
@@ -245,9 +282,28 @@ def transform_to_chinese(recipe_info):
             ing_str = ' '.join(
                 [repl_dict[ingredient][0], repl_dict[ingredient][1], repl_dict[ingredient][3][0]])
             new_ingredients.append(ing_str)
-            new_ing_names.append(repl_dict[ingredient][3][0])
+            new_ing_names[db_name] = [
+                repl_dict[ingredient][3][0], good_matches]
+            new_ing_names['new_vals'].append(repl_dict[ingredient][3][0])
     print(new_ingredients)
-    recipe_info['ingredients']=new_ingredients
+    recipe_info['ingredients'] = new_ingredients
+
+    new_steps = recipe_info['steps']
+    for i in range(len(recipe_info["steps"])):
+        for key in new_ing_names:
+            if key != "new_vals":
+                new_steps[i] = recipe_info["steps"][i].lower().replace(
+                    key, new_ing_names[key][0])
+                for near in new_ing_names[key][1]:
+                    new_steps[i] = recipe_info["steps"][i].lower().replace(
+                        near, new_ing_names[key][0])
+            # if len(key.split()) > 1:
+            #     for key_split in key.split():
+            #         if key_split not in new_ing_names[key]:
+            #             new_steps[i] = recipe_info["steps"][i].replace(
+            #                 key_split, new_ing_names[key])
+    recipe_info['steps'] = new_steps
+    return recipe_info
 
 
 def transform_cut_in_half(recipe_info):
