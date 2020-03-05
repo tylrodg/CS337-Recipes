@@ -3,6 +3,7 @@ import json
 import re
 import recipe_api
 
+
 def input_recipe():
     url = ""
     while not url:
@@ -18,6 +19,7 @@ def input_recipe():
         "Thanks for submitting that URL! The recipe you requested was " + name + ".\n"
     )
     return url, name
+
 
 def confirm_recipe(url):
     response = ""
@@ -37,6 +39,7 @@ def confirm_recipe(url):
             response = ""
     return url
 
+
 def fetch_recipe_info(url, name):
 
     print(
@@ -55,6 +58,7 @@ def fetch_recipe_info(url, name):
     with open(doc_name + ".json", "w") as recipe_file:
         json.dump(recipe_data, recipe_file)
     return recipe_data
+
 
 def transform_recipe(recipe_info):
     print(
@@ -80,6 +84,7 @@ def transform_recipe(recipe_info):
             print(transform + "? Great choice! We'll get on that right away.")
             transformed_recipe = getattr(recipe_api, transform)(recipe_info)
     return transformed_recipe
+
 
 def main():
     # Begin process
@@ -126,8 +131,19 @@ def main():
             else:
                 print("Sorry I didn't understand that.")
                 cont = ""
-    print("Thanks for using ReciParser! Bye!\n")
-    sys.exit(0)
+    print("Thanks for using ReciParser!\n")
+    new_rec_resp = ""
+    while not new_rec_resp:
+        new_rec_resp = input(
+            "Would you like to try another recipe? ([y]es/[n]o):").lower()
+        if new_rec_resp == 'y' or new_rec_resp == 'yes':
+            main()
+        elif cont == "n" or cont == "no":
+            print("Thanks for using ReciParser!\n")
+            sys.exit(0)
+        else:
+            print("Sorry, I didn't understand that!")
+            new_rec_resp = ""
 
 if __name__ == "__main__":
     main()
