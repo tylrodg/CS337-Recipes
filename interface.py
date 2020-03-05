@@ -68,7 +68,7 @@ def transform_recipe(recipe_info):
         if transform == "quit":
             print("Thanks for using ReciParser! Bye!\n")
             sys.exit(0)
-        elif transform == "option" or transform == "options" or transform == "o" or transform == "Options":
+        elif transform == "option" or transform == "options" or transform == "o":
             for at in available_transforms:
                 print(at)
             # reset to blank

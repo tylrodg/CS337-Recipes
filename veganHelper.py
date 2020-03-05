@@ -81,6 +81,7 @@ vegan = {
     "scallops": "pieces of cut and cubed tofu",
     "marshmallow": "gelatin-free marshmallow",
     "milk": "almond milk",
+    "cows milk": "milk",
     "butter": "coconut oil",
     "cheese": "cashew-based cheese alternative",
     "yogurt": "almond milk-based yogurt alternative",
@@ -90,13 +91,16 @@ vegan = {
     "casein": "hemp",
     "dressing": "dairy-free dressing",
     "tomato sauce": "non-dairy tomato sauce",
-    "honey": "maple syrup"
+    "honey": "maple syrup",
+    "egg": "mashed banana",
+    "eggs": "mashed banana",
+    "milk": "soy milk",
+    "mayonnaise": "vegan mayonnaise"
 }
 
 nonVegan = {
     "vegetable bouillon": "beef bouillon",
     "vegetable broth": "beef broth",
-    "broth": "beef broth",
     "textured soy protein": "ground beef",
     "veggie deli slice": "salami",
     "veg deli slice": "salami",
@@ -139,6 +143,25 @@ nonVegan = {
     "lentil": "cut fish of your choice",
     "carrots": "prawns",
     "carrot": "prawn",
+    "marshmallow": "gelatin-free marshmallow",
+    "almond milk": "milk",
+    "coconut milk": "milk",
+    "cashew milk": "milk",
+    "oat milk": "milk",
+    "coconut oil": "butter",
+    "cheese": "cashew-based cheese alternative",
+    "yogurt": "almond milk-based yogurt alternative",
+    "carmel": "dairy-free carmel",
+    "cream": "dairy-free cream",
+    "hemp protein": "whey",
+    "pea protein": "whey",
+    "casein": "hemp",
+    "dairy-free dressing": "dressing",
+    "maple syrup": "honey",
+    "canola oil": "butter",
+    "soy milk": "milk",
+    "vegan mayonnaise": "mayonnaise",
+    "agave nectar": "honey"
 }
 
 measurements = [
@@ -305,13 +328,13 @@ def veganHelper(recipe_info, chosen_dict):
 
     if chosen_dict == "vegan":
         chosen_dict = vegan
+        # add a disclaimer
+        ingr_lst.append(
+            "It is important to recognize that when choosing a vegan recipe to avoid milk and gelatin. Please read the label carefully to check whether or not the ingredients used contain any milk, meat, or any other animal-derived products: \n"
+        )
     if chosen_dict == "nonVegan":
         chosen_dict = nonVegan
 
-    # add a disclaimer
-    ingr_lst.append(
-            "It is important to recognize that when choosing a vegan recipe to avoid milk and gelatin. Please read the label carefully to check whether or not the ingredients used contain any milk, meat, or any other animal-derived products: \n"
-        )
     # generate the list
     for i in recipe_info["ingredients"]:
         no_punc = i.translate(str.maketrans("", "", string.punctuation))
