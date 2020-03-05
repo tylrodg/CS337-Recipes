@@ -43,7 +43,7 @@ def confirm_recipe(url):
 def fetch_recipe_info(url, name):
 
     print(
-        "First, we'll fetch the recipe information for you. Sit tight, this might take a minute or two. This will be provided below, as well as in a document for your reference later on."
+        "First, we'll fetch the recipe information for you. Sit tight, this might take a minute or two. This will be provided below, as well as in a document for your reference later on. First you'll see some general recipe info, then you'll see some step-by-step info."
     )
     fields = ["recipe_name", "ingredients", "tools", "methods", "steps"]
     recipe_data = {c: None for c in fields}
@@ -57,6 +57,7 @@ def fetch_recipe_info(url, name):
     doc_name = re.sub(r"\W+", "", name.lower())
     with open(doc_name + ".json", "w") as recipe_file:
         json.dump(recipe_data, recipe_file)
+
     return recipe_data
 
 
@@ -66,6 +67,7 @@ def transform_recipe(recipe_info):
     )
     transformed_recipe = {}
     available_transforms = [t for t in dir(recipe_api) if "transform" in t]
+    available_transforms.remove("cuisine_transformer")
     transform = ""
     while not transform:
         transform = input("Transformation: ").lower()
@@ -81,7 +83,7 @@ def transform_recipe(recipe_info):
             print("Sorry, I didn't quite understand that.")
             transform = ""
         else:
-            print(transform + "? Great choice! We'll get on that right away.")
+            print(transform + "? Great choice! We'll get on that right away. Below will be your brand new recipe!")
             transformed_recipe = getattr(recipe_api, transform)(recipe_info)
     return transformed_recipe
 
@@ -97,20 +99,37 @@ def main():
     url = confirm_recipe(url)
     # Get data from allrecipes.com
     recipe_info = fetch_recipe_info(url, name)
+    step_info = recipe_api.step_breakdown(recipe_info)
     # Display data
+    print("Here's some general recipe info!")
+    print("\n")
     for i in recipe_info:
         if i == "recipe_name":
             print("Recipe Name: " + recipe_info[i])
+            print("\n")
         else:
             print(i.capitalize())
             for e in recipe_info[i]:
                 print("- " + e)
+            print("\n")
+    print("Here's some step-by-step info!")
+    print("\n")
+    num = 0
+    for i in step_info:
+        print("Step" + " " + str(num) + ": " + i.capitalize())
+        num += 1
+        for e in step_info[i]:
+            lst = step_info[i][e]
+            str_lst = ', '.join(map(str, lst))
+            print("- " + e + ": " + str_lst)
         print("\n")
+    print("\n")
 
     # Apply transformations (allows for multiple until user wants to stop)
     nq = True
     while nq:
         transformed_recipe = transform_recipe(recipe_info)
+        transformed_steps = recipe_api.step_breakdown(transformed_recipe)
         for i in transformed_recipe:
             if i == "recipe_name":
                 print("Recipe Name: " + transformed_recipe[i])
@@ -119,6 +138,20 @@ def main():
                 for e in transformed_recipe[i]:
                     print("- " + e)
             print("\n")
+
+        print("Here's some step-by-step info!")
+        print("\n")
+        num = 0
+        for i in transformed_steps:
+            print("Step" + " " + str(num) + ": " + i.capitalize())
+            num += 1
+            for e in transformed_steps[i]:
+                lst = transformed_steps[i][e]
+                str_lst = ', '.join(map(str, lst))
+                print("- " + e + ": " + str_lst)
+            print("\n")
+        print("\n")
+        
         cont = ""
         while not cont:
             cont = input(

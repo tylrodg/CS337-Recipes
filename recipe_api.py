@@ -5,7 +5,7 @@ import bs4
 import requests
 import nltk
 import fractions
-from difflib import SequenceMatcher
+from difflib import SequenceMatcher, get_close_matches
 import json
 import re
 import string
@@ -156,13 +156,63 @@ def get_steps(url):
             steps.append(step.contents[1].contents[0].strip())
     return steps
 
+def step_breakdown(recipe_info):
+
+    methods = recipe_info["methods"]
+    tools = recipe_info["tools"]
+    step_data = {}
+    
+    for i in recipe_info["steps"]:
+    
+        time_words = ['hours', 'minutes', 'seconds', 'hour', 'minute', 'second']
+        step_dict = { }
+        m = [ ]
+        t = [ ]
+        ig = [ ]
+        ig_final = [ ]
+        tim = [ ]
+        
+        no_punc = i.translate(str.maketrans('', '', string.punctuation))
+        i_lst = no_punc.split()
+        for word in time_words:
+            for ind, var in enumerate(i_lst):
+                if word == var:
+                    message = i_lst[ind-1] + " " + var
+                    tim.append(message)
+    
+        step_dict["times"] = tim
+        
+        ingr = api.detect_food_in_text(i)
+        ingr = ingr.json()
+
+        for annotation in ingr['annotations']:
+            ig.append(annotation['annotation'])
+
+        for item in ig:
+            k = item
+            if not get_close_matches(k, ig_final, cutoff=0.5):
+                ig_final.append(k)
+        step_dict["ingredients"] = ig_final
+        
+        for method in methods:
+            if method in i:
+                m.append(method)
+        step_dict["methods"] = m
+        
+        for tool in tools:
+            if tool in i:
+                t.append(tool)
+        step_dict["tools"] = t
+
+        step_data[i] = step_dict
+
+    return step_data
 
 def transform_to_veg(recipe_info):
     return helper(recipe_info, "vegetarian")
 
 
 def transform_from_veg(recipe_info):
-    print(recipe_info)
     """
     check if a suitable substitute exists; if so, replace it
         
@@ -180,7 +230,6 @@ def transform_to_vegan(recipe_info):
     return recipe 
 
 def transform_from_vegan(recipe_info):
-    print(recipe_info)
     recipe = nonVeganChecker(recipe_info)
     if (recipe == "True"):
         return veganHelper(recipe_info, "nonVegan")
@@ -260,7 +309,7 @@ def cuisine_transformer(recipe_info, cuisine):
         unit = i['unitShort']
         repl_dict[shorter_name(name, originalName)] = [
             amount, unit, originalName]
-    print(repl_dict)
+    #print(repl_dict)
     for ingredient in repl_dict:
         db_name = ''
         good_matches = []
@@ -289,7 +338,7 @@ def cuisine_transformer(recipe_info, cuisine):
             new_ing_names[db_name] = [
                 repl_dict[ingredient][3][0], good_matches]
             new_ing_names['new_vals'].append(repl_dict[ingredient][3][0])
-    print(new_ingredients)
+#print(new_ingredients)
     recipe_info['ingredients'] = new_ingredients
 
     new_steps = recipe_info['steps']
