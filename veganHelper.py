@@ -255,7 +255,7 @@ measurements = [
     "tsps",
 ]
 
-replacements = {
+complimenter = {
     "chocolate": ["3 strips of crispy bacon", "Chop bacon and sprinkle on top."],
     "almonds": ["3 strips of crispy bacon", "Chop bacon and sprinkle on top."],
     "baked good": [
@@ -284,25 +284,34 @@ replacements = {
         "1/2 pound cubed beef",
         "Cook beef thoroughly and then combine with zucchini",
     ],
+    "lime":[
+        "shredded cheddar cheese",
+        "sprinkle the sharp cheddar cheese on top until satisfied."
+    ],
+    "corn":[
+        "shredded american cheese",
+        "sprinkle the sharp american cheese on top until satisfied."
+    ]
+
 }
 
-
+# this handles the replacements and the complementing
 def veganReplacer(recipe_info):
     str1 = ""
-    keys_lst = list(replacements.keys())
+    keys_lst = list(complimenter.keys())
     for i in recipe_info["ingredients"]:
         str1 = str1 + " " + i
 
     if "egg" in str1 and "chocolate" not in str1:
-        ingredient = replacements["baked good"][0]
-        step = replacements["baked good"][1]
+        ingredient = complimenter["baked good"][0]
+        step = complimenter["baked good"][1]
         recipe_info["ingredients"].append(ingredient)
         recipe_info["steps"].append(step)
     else:
         for i in keys_lst:
             if i in str1:
-                ingredient = replacements[i][0]
-                step = replacements[i][1]
+                ingredient = complimenter[i][0]
+                step = complimenter[i][1]
                 recipe_info["ingredients"].append(ingredient)
                 recipe_info["steps"].append(step)
                 break
